@@ -1,0 +1,47 @@
+name: check
+
+on:
+  schedule:
+    - cron: "3-59/10 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: uptime-check
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      - run: bun install --frozen-lockfile
+
+      - name: Restore history from data branch
+        run: |
+          mkdir -p data
+          if git ls-remote --exit-code --heads origin data > /dev/null; then
+            git fetch --depth=1 origin data
+            git show FETCH_HEAD:uptime.sqlite.zst | zstd -d -o data/uptime.sqlite
+          fi
+
+      - run: bun run cron
+
+      - name: Publish data branch
+        working-directory: data
+        run: |
+          zstd -19 -q -f uptime.sqlite -o uptime.sqlite.zst
+          git init -q -b data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add uptime.sqlite.zst status.json
+          git commit -q -m "uptime $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data

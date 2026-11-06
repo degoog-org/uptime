@@ -1,0 +1,40 @@
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "./vendor/fontawesome.css";
+@import "./vendor/degoog.css";
+
+@font-face {
+  font-family: "Inter";
+  src: url("./assets/fonts/inter-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Google Sans";
+  src: url("./assets/fonts/google-sans-wordmark.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: block;
+}
+
+@theme inline {
+  --font-sans: "Inter", arial, sans-serif;
+
+  --color-primary: var(--primary);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-border: var(--border);
+  --color-text-secondary: var(--text-secondary);
+
+  --text-md: 1rem;
+  --radius-xs: 0.1875rem;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
