@@ -16,9 +16,9 @@ export const ThirdPartyNotice = (): JSX.Element => (
       </div>
     </div>
     <p className="settings-desc">
-      Third parties run every instance on this list, degoog.org included. The
-      degoog project doesn't own, run or vet any of them, so we can't tell you
-      what they log or how they're set up. Pick one you trust, or{" "}
+      Third parties run every instance here, degoog.org included. We don't own,
+      run or vet any of them, so we can't say what they log or how they're set
+      up. Pick one you trust, or{" "}
       <a href={DEGOOG_URL} className="degoog-link">
         host your own
       </a>

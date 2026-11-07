@@ -55,10 +55,10 @@ export const AddInstanceDialog = ({
   const errors = validateDraft(draft, existingIds);
   const entry = errors.length === 0 ? buildEntry(draft) : null;
   const footerHint = entry
-    ? "Copy both snippets into the repo"
+    ? ""
     : draft.name.trim() && draft.url.trim()
-      ? "Fix the fields marked in red"
-      : "Add a name and URL to continue";
+      ? "Fix the fields in red"
+      : "Add a name and URL";
 
   const errorFor = (field: DraftError, touched: boolean): string | undefined =>
     touched && errors.includes(field) ? ERROR_TEXT[field] : undefined;
@@ -103,9 +103,8 @@ export const AddInstanceDialog = ({
 
         <div className="ext-modal-body">
           <p className="ext-field-desc">
-            Fill this in and you'll get the two lines to add to the degoog repo.
-            The checker calls /readyz and /api/whodis, so your instance needs a
-            degoog version that has both.
+            Your instance needs /readyz and /api/whodis, which recent degoog
+            versions have.
           </p>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -199,8 +198,8 @@ export const AddInstanceDialog = ({
               <div className="ext-field">
                 <span className="ext-field-label">1. instances.json</span>
                 <p className="ext-field-desc">
-                  Add this at the end of the <code>instances</code> array, and
-                  put a comma after the entry above it.{" "}
+                  Paste at the end of the <code>instances</code> array, with a
+                  comma after the previous entry.{" "}
                   <a
                     href={`${DEGOOG_URL}/edit/main/instances.json`}
                     target="_blank"
@@ -217,7 +216,7 @@ export const AddInstanceDialog = ({
               <div className="ext-field">
                 <span className="ext-field-label">2. PUBLIC_INSTANCES.md</span>
                 <p className="ext-field-desc">
-                  Add this line under "{markdownSection(entry)}".{" "}
+                  Paste under "{markdownSection(entry)}".{" "}
                   <a
                     href={`${DEGOOG_URL}/edit/main/PUBLIC_INSTANCES.md`}
                     target="_blank"
@@ -234,8 +233,8 @@ export const AddInstanceDialog = ({
               <div className="ext-field">
                 <span className="ext-field-label">3. Pull request</span>
                 <p className="ext-field-desc">
-                  GitHub forks the repo when you save the first file. Commit the
-                  second file to the same branch, then open one pull request.
+                  Commit both files to the same branch of your fork and open one
+                  pull request.
                 </p>
               </div>
             </>

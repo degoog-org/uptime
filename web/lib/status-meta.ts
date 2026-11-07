@@ -12,39 +12,37 @@ export const STATUS_META: Record<CheckStatus, StatusMeta> = {
   up: {
     label: "Up",
     tone: "success",
-    description: "Ready, and answered as degoog.",
+    description: "Ready.",
   },
   starting: {
     label: "Starting",
     tone: "warning",
-    description: "Answering, but still starting up.",
+    description: "Still starting up.",
   },
   unverified: {
     label: "Unverified",
     tone: "warning",
-    description: "Answering, but /api/whodis didn't answer like degoog does.",
+    description: "/api/whodis didn't answer like degoog.",
   },
   down: {
     label: "Down",
     tone: "danger",
-    description: "Unreachable, or returning errors.",
+    description: "Unreachable or returning errors.",
   },
   no_health_endpoint: {
     label: "No /readyz",
     tone: "danger",
-    description: "/readyz is missing, so it may be running an old degoog.",
+    description: "No /readyz. Probably an old degoog.",
   },
   blocked: {
     label: "Unknown",
     tone: "muted",
-    description:
-      "A firewall blocked the checker, so there's no way to tell if it's up. This doesn't count against uptime.",
+    description: "A firewall blocked the checker.",
   },
   rate_limited: {
     label: "Unknown",
     tone: "muted",
-    description:
-      "The instance rate limited the checker. This doesn't count against uptime.",
+    description: "Rate limited the checker.",
   },
 };
 

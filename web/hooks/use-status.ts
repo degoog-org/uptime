@@ -20,14 +20,12 @@ const _fetchStatus = async (signal: AbortSignal): Promise<StatusDocument> => {
   const response = await fetch(STATUS_URL, { cache: "no-store", signal }).catch(
     (error: unknown) => {
       if (signal.aborted) throw error;
-      throw new Error("the request failed");
+      throw new Error("Request failed");
     },
   );
-  if (!response.ok)
-    throw new Error(`the server answered HTTP ${response.status}`);
+  if (!response.ok) throw new Error(`Server answered HTTP ${response.status}`);
   const body: unknown = await response.json();
-  if (!_isStatusDocument(body))
-    throw new Error("the file isn't in the expected format");
+  if (!_isStatusDocument(body)) throw new Error("Unexpected file format");
   return sanitizeStatus(body);
 };
 
@@ -40,8 +38,7 @@ export const useStatus = (): StatusState => {
       setState({ phase: "ready", data });
     } catch (error) {
       if (signal.aborted) return;
-      const message =
-        error instanceof Error ? error.message : "the request failed";
+      const message = error instanceof Error ? error.message : "Request failed";
       setState((previous) =>
         previous.phase === "ready" ? previous : { phase: "error", message },
       );
