@@ -15,9 +15,9 @@ import {
   type ListedInstanceRow,
   type UptimeCountRow,
 } from "./status-queries";
+import { DAY_MS, historyStart, toDateKey, utcDayStart } from "./history-window";
 
 const HOUR_MS = 3_600_000;
-const DAY_MS = 24 * HOUR_MS;
 const HOURS_IN_DAY = 24;
 
 const WINDOW_MS: Record<UptimeWindow, number> = {
@@ -62,13 +62,10 @@ const _groupBy = <T>(
   return grouped;
 };
 
-const _utcDayStart = (timestamp: number): number =>
-  Math.floor(timestamp / DAY_MS) * DAY_MS;
-
 const _dateKeys = (now: number, days: number): string[] => {
-  const today = _utcDayStart(now);
+  const today = utcDayStart(now);
   return Array.from({ length: days }, (_, index) =>
-    new Date(today - (days - 1 - index) * DAY_MS).toISOString().slice(0, 10),
+    toDateKey(today - (days - 1 - index) * DAY_MS),
   );
 };
 
@@ -107,7 +104,7 @@ export const buildStatus = (
       ),
   );
   const dailyByInstance = _groupBy(
-    selectDailyCounts(db, _utcDayStart(now) - (historyDays - 1) * DAY_MS),
+    selectDailyCounts(db, historyStart(now, historyDays)),
     (row) => row.instanceId,
   );
   const latencyByInstance = _groupBy(

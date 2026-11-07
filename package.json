@@ -9,7 +9,7 @@
     "export": "bun run src/cli/export.ts",
     "cron": "bun run check && bun run export",
     "dev": "bun run scripts/dev.ts",
-    "dev:demo": "bun run scripts/seed-demo.ts && UPTIME_STATUS_PATH=data/demo-status.json bun run scripts/dev.ts",
+    "dev:demo": "bun run scripts/seed-demo.ts && UPTIME_STATUS_PATH=data/demo-status.json UPTIME_DAYS_DIR=data/demo-days bun run scripts/dev.ts",
     "build": "bun run scripts/build.ts",
     "sync:style": "bun run scripts/sync-degoog-style.ts",
     "format": "prettier --write .",

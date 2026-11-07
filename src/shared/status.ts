@@ -62,3 +62,9 @@ export interface StatusDocument {
   historyDays: number;
   instances: InstanceStatus[];
 }
+
+export interface DayDocument {
+  version: 1;
+  date: string;
+  instances: Record<string, UrlStatus[]>;
+}

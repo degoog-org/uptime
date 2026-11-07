@@ -33,3 +33,6 @@ export const toFlagEmoji = (countryCode: string): string =>
   );
 
 export const toHost = (url: string): string => new URL(url).host;
+
+export const formatUtcTime = (timestamp: number): string =>
+  new Date(timestamp).toISOString().slice(11, 16);

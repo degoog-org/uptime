@@ -4,13 +4,15 @@ import { openDatabase } from "../src/db/client";
 import { syncInstances } from "../src/db/instances-repository";
 import { recordRun } from "../src/db/runs-repository";
 import { buildStatus } from "../src/export/build-status";
-import { writeStatus } from "../src/export/write-status";
+import { buildDays } from "../src/export/build-days";
+import { writeJson } from "../src/export/write-json";
 import { loadInstances } from "../src/instances/load-instances";
 import type { CheckStatus } from "../src/shared/status";
 import type { CheckResult, Instance } from "../src/types";
 
 const DEMO_DB_PATH = "data/demo.sqlite";
 const DEMO_STATUS_PATH = "data/demo-status.json";
+const DEMO_DAYS_DIR = "data/demo-days";
 const DAY_MS = 86_400_000;
 const INTERVAL_MS = CHECK_INTERVAL_MINUTES * 60_000;
 
@@ -68,6 +70,7 @@ const _simulate = (
 
 const main = async (): Promise<void> => {
   rmSync(DEMO_DB_PATH, { force: true });
+  rmSync(DEMO_DAYS_DIR, { recursive: true, force: true });
   const instances = await loadInstances();
   const db = openDatabase(DEMO_DB_PATH);
   const now = Date.now();
@@ -99,7 +102,7 @@ const main = async (): Promise<void> => {
     }
   })();
 
-  await writeStatus(
+  await writeJson(
     DEMO_STATUS_PATH,
     buildStatus(db, {
       now,
@@ -107,10 +110,12 @@ const main = async (): Promise<void> => {
       historyDays: HISTORY_DAYS,
     }),
   );
-  db.close();
-  console.log(
-    `wrote ${DEMO_STATUS_PATH}, preview with UPTIME_STATUS_PATH=${DEMO_STATUS_PATH} bun run dev`,
+  const days = buildDays(db, now, HISTORY_DAYS);
+  await Promise.all(
+    days.map((day) => writeJson(`${DEMO_DAYS_DIR}/${day.date}.json`, day)),
   );
+  db.close();
+  console.log(`wrote ${DEMO_STATUS_PATH} and ${days.length} day files`);
 };
 
 await main();

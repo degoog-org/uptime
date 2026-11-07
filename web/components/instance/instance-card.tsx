@@ -1,7 +1,8 @@
-import type { JSX } from "react";
-import type { InstanceStatus } from "../../../src/shared/status";
+import { useCallback, useState, type JSX } from "react";
+import type { DailyUptime, InstanceStatus } from "../../../src/shared/status";
 import { formatRelativeTime } from "../../lib/format";
 import { UptimeBar } from "../charts/uptime-bar";
+import { DayChecksDialog } from "../day/day-checks-dialog";
 import { IssueBadge } from "../status/issue-badge";
 import { InstanceTags } from "./instance-tags";
 import { InstanceUrls } from "./instance-urls";
@@ -17,6 +18,8 @@ export const InstanceCard = ({
   now,
 }: InstanceCardProps): JSX.Element => {
   const primaryUrl = instance.urls[0]?.url;
+  const [selectedDay, setSelectedDay] = useState<DailyUptime | null>(null);
+  const closeDay = useCallback((): void => setSelectedDay(null), []);
 
   return (
     <article className="degoog-panel degoog-panel--ext-card flex flex-col gap-4">
@@ -44,8 +47,15 @@ export const InstanceCard = ({
       </div>
 
       {instance.urls.length > 1 && <InstanceUrls urls={instance.urls} />}
-      <UptimeBar daily={instance.daily} />
+      <UptimeBar daily={instance.daily} onSelectDay={setSelectedDay} />
       <UptimeStats instance={instance} />
+      {selectedDay && (
+        <DayChecksDialog
+          instance={instance}
+          day={selectedDay}
+          onClose={closeDay}
+        />
+      )}
     </article>
   );
 };

@@ -13,7 +13,7 @@ export interface ListedInstanceRow {
   cloudflare: number | null;
 }
 
-export interface LatestCheckRow {
+export interface CheckRow {
   instanceId: string;
   url: string;
   status: CheckStatus;
@@ -49,9 +49,9 @@ export const selectListedInstances = (db: Database): ListedInstanceRow[] =>
     )
     .all();
 
-export const selectLatestChecks = (db: Database): LatestCheckRow[] =>
+export const selectLatestChecks = (db: Database): CheckRow[] =>
   db
-    .query<LatestCheckRow, []>(
+    .query<CheckRow, []>(
       `SELECT c.instance_id AS instanceId, c.url, c.status, c.http_status AS httpStatus,
               c.latency_ms AS latencyMs, c.error, c.checked_at AS checkedAt
        FROM checks c
@@ -111,5 +111,18 @@ export const selectHourlyLatency = (
        JOIN runs r ON r.id = c.run_id
        WHERE r.discarded = 0 AND c.status = 'up' AND c.checked_at >= $since
        GROUP BY c.instance_id, hour`,
+    )
+    .all({ since });
+
+export const selectChecksSince = (db: Database, since: number): CheckRow[] =>
+  db
+    .query<CheckRow, { since: number }>(
+      `SELECT c.instance_id AS instanceId, c.url, c.status, c.http_status AS httpStatus,
+              c.latency_ms AS latencyMs, c.error, c.checked_at AS checkedAt
+       FROM checks c
+       JOIN runs r ON r.id = c.run_id
+       JOIN instances i ON i.id = c.instance_id
+       WHERE r.discarded = 0 AND i.listed = 1 AND c.checked_at >= $since
+       ORDER BY c.checked_at, c.id`,
     )
     .all({ since });

@@ -1,13 +1,12 @@
 import { mkdirSync, renameSync } from "fs";
 import { dirname } from "path";
-import type { StatusDocument } from "../shared/status";
 
-export const writeStatus = async (
+export const writeJson = async (
   path: string,
-  status: StatusDocument,
+  value: unknown,
 ): Promise<void> => {
   mkdirSync(dirname(path), { recursive: true });
   const temporaryPath = `${path}.${process.pid}.tmp`;
-  await Bun.write(temporaryPath, JSON.stringify(status));
+  await Bun.write(temporaryPath, JSON.stringify(value));
   renameSync(temporaryPath, path);
 };
