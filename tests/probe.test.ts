@@ -88,6 +88,22 @@ describe("probeInstanceUrl", () => {
     expect((await probe("unknown")).status).toBe("no_health_endpoint");
   });
 
+  test("a server that resets the connection is blocked, not down", async () => {
+    const resetter = Bun.listen({
+      hostname: "127.0.0.1",
+      port: 0,
+      socket: {
+        open: (socket) => socket.terminate(),
+        data: () => undefined,
+      },
+    });
+    const result = await probeInstanceUrl(`http://127.0.0.1:${resetter.port}`);
+    resetter.stop(true);
+    expect(result.status).toBe("blocked");
+    expect(result.httpStatus).toBeNull();
+    expect(result.error).toContain("ECONNRESET");
+  });
+
   test("unreachable host is down with a network error", async () => {
     const result = await probeInstanceUrl("http://127.0.0.1:1");
     expect(result.status).toBe("down");

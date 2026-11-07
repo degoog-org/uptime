@@ -38,7 +38,7 @@ export const STATUS_META: Record<CheckStatus, StatusMeta> = {
     label: "Unknown",
     tone: "muted",
     description:
-      "Cloudflare challenged the checker. This doesn't count against uptime.",
+      "A firewall blocked the checker, so there's no way to tell if it's up. This doesn't count against uptime.",
   },
   rate_limited: {
     label: "Unknown",

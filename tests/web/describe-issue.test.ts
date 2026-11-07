@@ -35,6 +35,11 @@ describe("describeIssue", () => {
     expect(describeIssue(check("down", null, "something odd"))).toBe(
       "Unreachable",
     );
+    expect(
+      describeIssue(
+        check("blocked", null, "ECONNRESET: The socket connection was closed"),
+      ),
+    ).toBe("Connection reset");
   });
 
   test("a 200 that fails the whodis check is not reported as HTTP 200", () => {

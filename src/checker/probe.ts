@@ -1,6 +1,10 @@
 import { READY_PATH, WHODIS_PATH } from "../config";
 import type { ProbeResult } from "../types";
-import { classifyReadiness, isDegoogWhodis } from "./classify";
+import {
+  classifyNetworkError,
+  classifyReadiness,
+  isDegoogWhodis,
+} from "./classify";
 import { httpGet } from "./http";
 
 export const probeInstanceUrl = async (
@@ -9,7 +13,7 @@ export const probeInstanceUrl = async (
   const readiness = await httpGet(`${baseUrl}${READY_PATH}`);
   if (!readiness.ok) {
     return {
-      status: "down",
+      status: classifyNetworkError(readiness.error),
       httpStatus: null,
       latencyMs: null,
       error: readiness.error,

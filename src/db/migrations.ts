@@ -36,4 +36,11 @@ export const MIGRATIONS: readonly string[] = [
   CREATE INDEX checks_instance_checked_at ON checks(instance_id, checked_at);
   CREATE INDEX checks_run_id ON checks(run_id);
   `,
+  `
+  UPDATE checks
+  SET status = 'blocked'
+  WHERE status = 'down'
+    AND http_status IS NULL
+    AND (error LIKE '%ECONNRESET%' OR error LIKE '%connection was closed unexpectedly%');
+  `,
 ];

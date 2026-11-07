@@ -2,6 +2,9 @@ import { WHODIS_RESPONSE } from "../config";
 import type { CheckStatus } from "../shared/status";
 import type { HttpSnapshot } from "../types";
 
+const CONNECTION_RESET_PATTERN =
+  /ECONNRESET|connection was closed unexpectedly/i;
+
 const CLOUDFLARE_CHALLENGE_MARKERS = [
   "challenge-platform",
   "cf-chl-",
@@ -44,3 +47,6 @@ export const classifyReadiness = (snapshot: HttpSnapshot): CheckStatus => {
 
 export const isDegoogWhodis = (snapshot: HttpSnapshot): boolean =>
   snapshot.status === 200 && snapshot.body.trim() === WHODIS_RESPONSE;
+
+export const classifyNetworkError = (error: string): CheckStatus =>
+  CONNECTION_RESET_PATTERN.test(error) ? "blocked" : "down";
