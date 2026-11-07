@@ -15,5 +15,5 @@ export const PROBE_CONCURRENCY = 8;
 export const MAX_BODY_BYTES = 64 * 1024;
 
 export const STATUS_PATH = process.env.UPTIME_STATUS_PATH ?? "data/status.json";
-export const CHECK_INTERVAL_MINUTES = 10;
+export const CHECK_INTERVAL_MINUTES = 30;
 export const HISTORY_DAYS = 90;

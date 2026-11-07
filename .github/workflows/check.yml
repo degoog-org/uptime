@@ -2,20 +2,35 @@ name: check
 
 on:
   schedule:
-    - cron: "3,13,23,33,43,53 * * * *"
+    - cron: "13,43 * * * *"
   workflow_dispatch:
+    inputs:
+      chained:
+        description: Wait for the tick environment timer before checking
+        type: boolean
+        default: false
 
 concurrency:
   group: uptime-check
   cancel-in-progress: false
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
+  wait:
+    if: ${{ inputs.chained }}
+    runs-on: ubuntu-latest
+    environment: tick
+    steps:
+      - run: echo "tick"
+
   check:
+    needs: wait
+    if: ${{ !cancelled() && needs.wait.result != 'failure' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -45,3 +60,16 @@ jobs:
           git add uptime.sqlite.zst status.json
           git commit -q -m "uptime $(date -u +%Y-%m-%dT%H:%MZ)"
           git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" data
+
+  next:
+    needs: check
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      actions: write
+    steps:
+      - name: Queue the next check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run check.yml --repo "${{ github.repository }}" --ref "${{ github.ref_name }}" -f chained=true
